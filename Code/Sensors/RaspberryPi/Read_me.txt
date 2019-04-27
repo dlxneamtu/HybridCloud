@@ -27,3 +27,6 @@ sudo docker run --privileged -it -v /home/pi/settings:/usr/src/app/settings prad
 demon mode - 
 ============
 sudo docker run --privileged -d -v /home/pi/settings:/usr/src/app/settings pradeesi/rapi_cl_hc_sensor
+
+
+test
