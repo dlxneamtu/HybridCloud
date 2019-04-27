@@ -18,7 +18,7 @@ spec:
         app: iot-backend-mqtt-db-agent
     spec:
       containers:
-      - image: dlxneamtu/hybrid_cloud_backend:no_proxy_v1
+      - image: dlxneamtu/mqtt_db_plugin:custom_mqtt_v2
         name: mqtt-db-agent
         env:
         - name: DB_PASSWORD

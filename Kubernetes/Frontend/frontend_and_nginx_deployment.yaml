@@ -7,7 +7,7 @@ metadata:
   labels:
     app: "iot-frontend"
 data:
-  BACKEND_HOST: "172.18.1.19"
+  BACKEND_HOST: "89.137.105.5"
   BACKEND_PORT: "30500"
 ---
 apiVersion: "extensions/v1beta1"
@@ -18,7 +18,7 @@ metadata:
   labels:
     app: "iot-frontend"
 spec:
-  replicas: 3
+  replicas: 2
   selector:
     matchLabels:
       app: "iot-frontend"
@@ -29,7 +29,7 @@ spec:
     spec:
       containers:
       - name: "frontend-server"
-        image: "eu.gcr.io/fwardz001-poc-ci1s/frontend_server:latest"
+        image: "dlxneamtu/hybrid_cloud_frontend:latest"
         env:
         - name: "BACKEND_HOST"
           valueFrom:
@@ -42,4 +42,4 @@ spec:
               key: "BACKEND_PORT"
               name: "iot-frontend-config"
       - name: "nginx-srvr"
-        image: "eu.gcr.io/fwardz001-poc-ci1s/nginx_srvr:latest"
+        image: "eu.gcr.io/expanded-lock-234409/nginx-srv-dneamtu:latest"

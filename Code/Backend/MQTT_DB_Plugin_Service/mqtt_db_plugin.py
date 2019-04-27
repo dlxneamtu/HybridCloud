@@ -1,5 +1,6 @@
 import paho.mqtt.client as mqtt
 import ssl
+import socks
 import time
 import json
 import datetime
@@ -14,6 +15,7 @@ import os
 SETTINGS_FILE_NAME = 'settings.ini'
 
 DB_PASSWORD = str(os.environ['DB_PASSWORD'])
+#DB_PASSWORD = 'cisco123'
 
 def get_Settings(Section_Name):
 	try:
@@ -76,6 +78,7 @@ def save_sensor_data(json_payload):
 #=============================================================
 
 # Initiate MQTT Client
+
 mqttc = mqtt.Client()
 
 # This function will be invoked every time,
@@ -86,11 +89,13 @@ def on_message(mosq, obj, msg):
 	#print "Payload: " + str(msg.payload)
 	if msg.payload:
 		try:
-			print (msg.payload)
+			print ('message triggered, printing the message payload ', msg.payload)
 			# If it is a valid Sensor Data json (Check if all the required Json Keys are in Json payload)
 			if all (k in (json.loads(msg.payload)) for k in ('SensorID','Location','DateTime','Temperature','Humidity')):
 				save_sensor_data(msg.payload)
+				print('saved to database\n')
 		except:
+			print("No database insertion\n")
 			pass
 
 def on_subscribe(client, userdata, mid, granted_qos):
@@ -109,7 +114,8 @@ def close_connection():
 	# Close DB Connection.
 	try:
 		# Connection will be closed gracefully in the Sensor_DB_Class destructor
-		del db_connection
+		pass
+#		del db_connection
 	except:
 		print "Unable to close DB Connection"
 	# Close MQTT session
@@ -127,7 +133,7 @@ mqttc.on_subscribe = on_subscribe
 # Configure TLS Set
 print ("Trying to create MQTT TLS Set for authentication...")
 mqttc.tls_set(CA_ROOT_CERT_FILE, certfile=THING_CERT_FILE, keyfile=THING_PRIVATE_KEY, cert_reqs=ssl.CERT_REQUIRED, tls_version=ssl.PROTOCOL_TLSv1_2, ciphers=None)
-
+#mqttc.proxy_set(proxy_addr="proxy-wsa.esl.cisco.com", proxy_port=80, proxy_type=socks.HTTP)
 # Connect with MQTT Broker
 print ("Trying to connected to AWS IoT Core...")
 mqttc.connect(MQTT_HOST, MQTT_PORT, MQTT_KEEPALIVE_INTERVAL)	

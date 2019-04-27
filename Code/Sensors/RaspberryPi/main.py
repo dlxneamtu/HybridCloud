@@ -25,16 +25,17 @@ def get_Settings(Section_Name):
 def read_DHT11_data(gpio_pin):
 
     # Read Humidity and Tempeature
-    humidity, temperature = Adafruit_DHT.read_retry(Adafruit_DHT.DHT11, gpio_pin)
+    humidity, temperature = Adafruit_DHT.read_retry(Adafruit_DHT.DHT22, gpio_pin)
 
     # Return humidity and temperature data
+    print("humidity, temperature\n",humidity, temperature)
     return humidity, temperature
-
 
 def prepare_sensor_data():
 	try:
 		# Read sensor data
-		humidity, temperature = read_DHT11_data(SENSOR_GPIO_PIN) 
+		humidity, temperature = read_DHT11_data(SENSOR_GPIO_PIN)
+		print(humidity, temperature)
 
 		# Prepare json paylod
 		sensor_data = {}
@@ -52,6 +53,28 @@ def prepare_sensor_data():
 		print "Error in prepare_sensor_data"
 		return None
 
+'''
+def prepare_sensor_data_local_test():
+	try:
+		# Read sensor data
+#		humidity, temperature = read_DHT11_data(SENSOR_GPIO_PIN)
+
+		# Prepare json paylod
+		sensor_data = {}
+		sensor_data['SensorID'] = SENSOR_ID
+		sensor_data['Location'] = CITY
+		sensor_data['DateTime'] = str(datetime.datetime.utcnow())
+		sensor_data['Temperature'] = 60
+		sensor_data['Humidity'] = 30
+
+		sensor_data_json = json.dumps(sensor_data)
+
+		# Return Json Data
+		return sensor_data_json
+	except:
+		print "Error in prepare_sensor_data"
+		return None
+'''
 
 settings = get_Settings('SENSOR_SETTINGS')
 
@@ -66,7 +89,6 @@ MQTT_HOST = settings['MQTT_HOST']
 CA_ROOT_CERT_FILE = SETTINGS_DIRECTORY + settings['CA_ROOT_CERT_FILE']
 THING_CERT_FILE = SETTINGS_DIRECTORY + settings['THING_CERT_FILE']
 THING_PRIVATE_KEY = SETTINGS_DIRECTORY + settings['THING_PRIVATE_KEY']
-
 
 
 # This function will be triggered on successful MQTT connection
@@ -85,19 +107,25 @@ mqttc.tls_set(CA_ROOT_CERT_FILE, certfile=THING_CERT_FILE, keyfile=THING_PRIVATE
 
 # Connect with MQTT Broker
 mqttc.connect(MQTT_HOST, MQTT_PORT, MQTT_KEEPALIVE_INTERVAL)
+
 mqttc.loop_start()
 
 
-
 while True:
+
 	# Read Sensor Data
 	sensor_data_json = prepare_sensor_data()
+
+#	sensor_data_json = prepare_sensor_data_local_test()
+
 	# If Sensor data is not None
 	if sensor_data_json:
 		mqttc.publish(MQTT_TOPIC, sensor_data_json, qos=1)
+
+#	mqttc.publish(MQTT_TOPIC, sensor_data_json, qos=1)
 
 	time.sleep(SLEEP_INTERVAL)
 
 
 # Disconnect from MQTT_Broker
-# mqttc.disconnect()
+mqttc.disconnect()

@@ -8,8 +8,8 @@ metadata:
 spec:
   ports:
     - protocol: TCP
-      port: 5050
-      targetPort: 80
+      port: 32086
+      targetPort: 5050
   selector:
     app: iot-backend-rest-api-agent
     tier: rest-api-agent
