@@ -9,4 +9,6 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
-CMD [ "python", "./main.py" ]
+RUN chmod +x docker_commands
+
+CMD "./docker_commands"
